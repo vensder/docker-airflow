@@ -50,20 +50,39 @@ RUN set -ex \
     && update-locale LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8 \
     && useradd -ms /bin/bash -d ${AIRFLOW_HOME} airflow \
     && python -m pip install -U pip setuptools wheel \
+    && pip install JayDeBeApi==0.2.0 \
     && pip install Cython \
     && pip install pytz \
     && pip install pyOpenSSL \
     && pip install ndg-httpsclient \
     && pip install pyasn1 \
-    && pip install apache-airflow[crypto,celery,postgres,hive,jdbc]==$AIRFLOW_VERSION \
+    && pip install apache-airflow[crypto,celery,postgres,hive,jdbc,s3]==$AIRFLOW_VERSION \
     && pip install celery[redis]==3.1.17 \
     && pip install pytest \
     && pip install pytest-reportportal \
     && pip install reportportal-client \
-    && pip install boto3 \
+    && pip install flask_bcrypt \
+    && pip install boto boto3 \
+    && echo "===> add webupd8 repository..." \
+    && apt-get install -yqq --no-install-recommends gnupg2 \
+    && echo "deb http://ppa.launchpad.net/webupd8team/java/ubuntu xenial main" | tee /etc/apt/sources.list.d/webupd8team-java.list \
+    && echo "deb-src http://ppa.launchpad.net/webupd8team/java/ubuntu xenial main" | tee -a /etc/apt/sources.list.d/webupd8team-java.list \
+    && apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys EEA14886 \
+    && apt-get update \
+    \
+    echo "===> install Java"  && \
+    mkdir -p /usr/share/man/man1/ && \
+    echo debconf shared/accepted-oracle-license-v1-1 select true | debconf-set-selections  && \
+    echo debconf shared/accepted-oracle-license-v1-1 seen true | debconf-set-selections  && \
+    apt-get install -y --no-install-recommends oracle-java8-installer oracle-java8-set-default && \
+    \
+    echo "===> python packages" && \
+
     && apt-get purge --auto-remove -yqq $buildDeps \
     && apt-get clean \
     && rm -rf \
+        /var/cache/oracle-jdk8-installer \
+        /root/.cache \
         /var/lib/apt/lists/* \
         /tmp/* \
         /var/tmp/* \
@@ -71,8 +90,19 @@ RUN set -ex \
         /usr/share/doc \
         /usr/share/doc-base
 
-COPY script/entrypoint.sh /entrypoint.sh
+# Define commonly used JAVA_HOME variable
+ENV JAVA_HOME /usr/lib/jvm/java-8-oracle
+
+RUN mkdir ${AIRFLOW_HOME}/dags \
+          ${AIRFLOW_HOME}/exasol \
+          ${AIRFLOW_HOME}/plugins \
+          ${AIRFLOW_HOME}/logs \
+          ${AIRFLOW_HOME}/processing
+
+COPY jdbc/*.jar /usr/lib/jvm/java-8-oracle/jre/lib/ext/
+COPY script/airflow_security.py ${AIRFLOW_HOME}/airflow_security.py
 COPY config/airflow.cfg ${AIRFLOW_HOME}/airflow.cfg
+COPY script/entrypoint.sh /entrypoint.sh
 
 RUN chown -R airflow: ${AIRFLOW_HOME}
 
