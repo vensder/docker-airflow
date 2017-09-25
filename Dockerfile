@@ -96,7 +96,7 @@ RUN mkdir ${AIRFLOW_HOME}/dags \
           ${AIRFLOW_HOME}/logs \
           ${AIRFLOW_HOME}/processing
 
-COPY jdbc/*.jar /usr/lib/jvm/java-8-oracle/jre/lib/ext/
+# COPY jdbc/*.jar /usr/lib/jvm/java-8-oracle/jre/lib/ext/
 COPY script/airflow_security.py ${AIRFLOW_HOME}/airflow_security.py
 COPY config/airflow.cfg ${AIRFLOW_HOME}/airflow.cfg
 COPY script/entrypoint.sh /entrypoint.sh
