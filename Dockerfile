@@ -57,6 +57,10 @@ RUN set -ex \
     && pip install pyasn1 \
     && pip install apache-airflow[crypto,celery,postgres,hive,jdbc]==$AIRFLOW_VERSION \
     && pip install celery[redis]==3.1.17 \
+    && pip install pytest \
+    && pip install pytest-reportportal \
+    && pip install reportportal-client \
+    && pip install boto3 \
     && apt-get purge --auto-remove -yqq $buildDeps \
     && apt-get clean \
     && rm -rf \
