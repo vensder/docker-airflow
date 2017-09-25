@@ -69,15 +69,12 @@ RUN set -ex \
     && echo "deb-src http://ppa.launchpad.net/webupd8team/java/ubuntu xenial main" | tee -a /etc/apt/sources.list.d/webupd8team-java.list \
     && apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys EEA14886 \
     && apt-get update \
-    \
-    echo "===> install Java"  && \
-    mkdir -p /usr/share/man/man1/ && \
-    echo debconf shared/accepted-oracle-license-v1-1 select true | debconf-set-selections  && \
-    echo debconf shared/accepted-oracle-license-v1-1 seen true | debconf-set-selections  && \
-    apt-get install -y --no-install-recommends oracle-java8-installer oracle-java8-set-default && \
-    \
-    echo "===> python packages" && \
-
+    &&  echo "===> install Java" \
+    && mkdir -p /usr/share/man/man1/ \
+    && echo debconf shared/accepted-oracle-license-v1-1 select true | debconf-set-selections \
+    && echo debconf shared/accepted-oracle-license-v1-1 seen true | debconf-set-selections \
+    && apt-get install -y --no-install-recommends oracle-java8-installer oracle-java8-set-default \
+    && echo "===> python packages" \
     && apt-get purge --auto-remove -yqq $buildDeps \
     && apt-get clean \
     && rm -rf \
