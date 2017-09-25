@@ -56,7 +56,7 @@ RUN set -ex \
     && pip install pyOpenSSL \
     && pip install ndg-httpsclient \
     && pip install pyasn1 \
-    && pip install apache-airflow[crypto,celery,postgres,hive,jdbc,s3]==$AIRFLOW_VERSION \
+    && pip install apache-airflow[s3]==$AIRFLOW_VERSION \
     && pip install celery[redis]==3.1.17 \
     && pip install pytest \
     && pip install pytest-reportportal \
