@@ -5,7 +5,7 @@
 # SOURCE: https://github.com/puckel/docker-airflow
 
 FROM python:3.6-slim
-MAINTAINER Puckel_
+MAINTAINER vensder
 
 # Never prompts the user for choices on installation/configuration of packages
 ENV DEBIAN_FRONTEND noninteractive
@@ -56,7 +56,7 @@ RUN set -ex \
     && pip install pyOpenSSL \
     && pip install ndg-httpsclient \
     && pip install pyasn1 \
-    && pip install apache-airflow[s3]==$AIRFLOW_VERSION \
+    && pip install apache-airflow[crypto,celery,postgres,hive,jdbc,s3]==$AIRFLOW_VERSION \
     && pip install celery[redis]==3.1.17 \
     && pip install pytest \
     && pip install pytest-reportportal \
@@ -74,7 +74,9 @@ RUN set -ex \
     && echo debconf shared/accepted-oracle-license-v1-1 select true | debconf-set-selections \
     && echo debconf shared/accepted-oracle-license-v1-1 seen true | debconf-set-selections \
     && apt-get install -y --no-install-recommends oracle-java8-installer oracle-java8-set-default \
-    && echo "===> python packages" \
+    && echo "===> download EXASOL_JDBC-6.0.3.tar.gz and copy jdbc driver" \
+    && curl -L https://www.exasol.com/support/secure/attachment/54232/EXASOL_JDBC-6.0.3.tar.gz | tar zxv -O EXASOL_JDBC-6.0.3/exajdbc.jar > /usr/lib/jvm/java-8-oracle/jre/lib/ext/exajdbc.jar \
+    && echo "===> purge" \
     && apt-get purge --auto-remove -yqq $buildDeps \
     && apt-get clean \
     && rm -rf \
