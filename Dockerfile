@@ -63,6 +63,7 @@ RUN set -ex \
     && pip install reportportal-client \
     && pip install flask_bcrypt \
     && pip install boto boto3 \
+    && pip install elasticsearch \
     && echo "===> add webupd8 repository..." \
     && apt-get install -yqq --no-install-recommends gnupg2 \
     && echo "deb http://ppa.launchpad.net/webupd8team/java/ubuntu xenial main" | tee /etc/apt/sources.list.d/webupd8team-java.list \
